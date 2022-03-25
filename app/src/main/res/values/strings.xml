@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">IPAY88SDK-Demo</string>
+    <string name="ipay88_app_secret">abc</string>
+</resources>
