@@ -7,7 +7,7 @@ We accept online payments from various methods, such as:
 * [Demo App](#4-demo)
 
 # Mobile Payment SDK - Android
-[![](https://jitpack.io/v/ipay88-kh/android-sdk.svg)](https://jitpack.io/#ipay88-kh/android-sdk)
+[![](https://jitpack.io/v/ipay88-kh/android-payment-sdk.svg)](https://jitpack.io/#ipay88-kh/android-payment-sdk)
 
 ## 1. SDK Payment Flow
 1. Your application initializes the library.
