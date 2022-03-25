@@ -7,6 +7,6 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
-rootProject.name = "android-sdk"
+rootProject.name = "android-payment-sdk"
 include ':app'
 include ':ipay88sdk'
