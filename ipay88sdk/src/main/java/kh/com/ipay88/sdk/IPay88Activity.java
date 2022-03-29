@@ -19,6 +19,8 @@ import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -102,7 +104,15 @@ public class IPay88Activity extends AppCompatActivity {
         fabCancel = findViewById(R.id.fab_cancel);
         fabCancel.setOnClickListener(view -> {
             try {
-                wbvPayment.loadUrl("javascript:window.document.PaymentCancel.submit();");
+                new AlertDialog.Builder(view.getContext())
+                        .setTitle("Cancellation")
+                        .setMessage("Please confirm cancellation of this payment")
+                        .setPositiveButton(android.R.string.ok,
+                                (dialog, which) -> wbvPayment.loadUrl("javascript:window.document.PaymentCancel.submit();"))
+                        .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
+                        .setCancelable(false)
+                        .create()
+                        .show();
             } catch (Exception e) {
                 String errMsg = "Payment Cancel at Bank Page! " + e.getMessage();
                 showErrorMsg(errMsg);
@@ -154,16 +164,12 @@ public class IPay88Activity extends AppCompatActivity {
         wbvPayment.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                final JsResult finalRes = result;
-                new AlertDialog.Builder(view.getContext())
-                        .setTitle(null)
-                        .setMessage(message)
-                        .setPositiveButton(android.R.string.ok,
-                                (dialog, which) -> finalRes.confirm())
-                        .setCancelable(false)
-                        .create()
-                        .show();
-                return true;
+                return showJSAlertConfirm(view, message, result);
+            }
+
+            @Override
+            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+                return showJSAlertConfirm(view, message, result);
             }
 
             @Override
@@ -238,6 +244,27 @@ public class IPay88Activity extends AppCompatActivity {
             Log.e("errorMsg : ", errorMsg);
             finish();
         }
+    }
+
+    /**
+     * JS Alert + Confirm Dialog
+     * @param view
+     * @param message
+     * @param result
+     * @return
+     */
+    private boolean showJSAlertConfirm(WebView view, String message, JsResult result) {
+        final JsResult finalRes = result;
+        new AlertDialog.Builder(view.getContext())
+                .setTitle(message.contains("cancellation") ? "Cancellation" : null)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok,
+                        (dialog, which) -> finalRes.confirm())
+                .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> finalRes.cancel())
+                .setCancelable(false)
+                .create()
+                .show();
+        return true;
     }
 
     /**
