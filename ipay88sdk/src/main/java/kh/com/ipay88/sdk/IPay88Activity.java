@@ -1,5 +1,6 @@
 package kh.com.ipay88.sdk;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,8 +20,6 @@ import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -60,6 +59,7 @@ public class IPay88Activity extends AppCompatActivity {
     private WebView wbvPayment;
     private ProgressBar progressBar;
     private FloatingActionButton fabCancel;
+    private int countCancelClick;
     private String clientAppId;
     private String clientUserAgent;
     private String clientAppSecret;
@@ -108,7 +108,16 @@ public class IPay88Activity extends AppCompatActivity {
                         .setTitle("Cancellation")
                         .setMessage("Please confirm cancellation of this payment")
                         .setPositiveButton(android.R.string.ok,
-                                (dialog, which) -> wbvPayment.loadUrl("javascript:window.document.PaymentCancel.submit();"))
+                                (dialog, which) -> {
+                                    // MARK: - Handle in case WebView on error page
+                                    countCancelClick++;
+                                    if (countCancelClick <= 1) {
+                                        wbvPayment.loadUrl("javascript:window.document.PaymentCancel.submit();");
+                                    } else {
+                                        String errMsg = "Payment Cancel (forced!)";
+                                        showErrorMsg(errMsg);
+                                    }
+                                })
                         .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                         .setCancelable(false)
                         .create()
@@ -123,7 +132,7 @@ public class IPay88Activity extends AppCompatActivity {
         wbvPayment.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Log.e("URL -> ", url);
+                Log.e("UrlLoading", url);
 
                 IPay88Deeplink sdkDeeplink = null;
                 for (IPay88Deeplink item : IPay88DeeplinkList) {
@@ -241,13 +250,13 @@ public class IPay88Activity extends AppCompatActivity {
         } else {
             String errorMsg = "Invalid Payment Request!";
             Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
-            Log.e("errorMsg : ", errorMsg);
             finish();
         }
     }
 
     /**
      * JS Alert + Confirm Dialog
+     *
      * @param view
      * @param message
      * @param result
