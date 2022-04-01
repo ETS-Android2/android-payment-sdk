@@ -1,6 +1,5 @@
 package kh.com.ipay88.sdk;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -173,12 +172,14 @@ public class IPay88Activity extends AppCompatActivity {
         wbvPayment.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                return showJSAlertConfirm(view, message, result);
+                Log.e("onJsAlert", message);
+                return showJSAlertConfirm(view, message, result, true);
             }
 
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-                return showJSAlertConfirm(view, message, result);
+                Log.e("onJsConfirm", message);
+                return showJSAlertConfirm(view, message, result, false);
             }
 
             @Override
@@ -260,19 +261,31 @@ public class IPay88Activity extends AppCompatActivity {
      * @param view
      * @param message
      * @param result
+     * @param isAlert
      * @return
      */
-    private boolean showJSAlertConfirm(WebView view, String message, JsResult result) {
+    private boolean showJSAlertConfirm(WebView view, String message, JsResult result, boolean isAlert) {
         final JsResult finalRes = result;
-        new AlertDialog.Builder(view.getContext())
-                .setTitle(message.contains("cancellation") ? "Cancellation" : null)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok,
-                        (dialog, which) -> finalRes.confirm())
-                .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> finalRes.cancel())
-                .setCancelable(false)
-                .create()
-                .show();
+        if (isAlert) {
+            new AlertDialog.Builder(view.getContext())
+                    .setTitle(message.contains("cancellation") ? "Cancellation" : null)
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok,
+                            (dialog, which) -> finalRes.confirm())
+                    .setCancelable(false)
+                    .create()
+                    .show();
+        } else {
+            new AlertDialog.Builder(view.getContext())
+                    .setTitle(message.contains("cancellation") ? "Cancellation" : null)
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok,
+                            (dialog, which) -> finalRes.confirm())
+                    .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> finalRes.cancel())
+                    .setCancelable(false)
+                    .create()
+                    .show();
+        }
         return true;
     }
 
