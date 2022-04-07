@@ -1,9 +1,11 @@
 package kh.com.ipay88.sdk.demo;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -102,7 +104,8 @@ public class SettingActivity extends AppCompatActivity {
                     .putString(SharedPrefHelper.SHARED_PREF_BACKEND_URL, edtBackendUrl.getText().toString())
                     .apply();
 
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 
             Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
         });
