@@ -6,9 +6,9 @@
         android:icon="@android:drawable/ic_menu_recent_history"
         android:title="History"
         app:showAsAction="ifRoom"></item>
-    <!--<item
+    <item
         android:id="@+id/menu_activity_main_setting"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="Setting"
-        app:showAsAction="withText"></item>-->
+        app:showAsAction="withText"></item>
 </menu>

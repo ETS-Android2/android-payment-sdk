@@ -25,6 +25,7 @@ import kh.com.ipay88.sdk.constants.IPay88Constants;
 import kh.com.ipay88.sdk.demo.databases.HistoryItemDto;
 import kh.com.ipay88.sdk.demo.databases.IPay88DemoDatabase;
 import kh.com.ipay88.sdk.demo.databases.IPay88DemoDatabaseHelper;
+import kh.com.ipay88.sdk.demo.utils.SharedPrefHelper;
 import kh.com.ipay88.sdk.demo.utils.StringUtils;
 import kh.com.ipay88.sdk.models.IPay88PayRequest;
 import kh.com.ipay88.sdk.models.IPay88PayResponse;
@@ -42,11 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static IPay88PayResponse payResponse;
 
     private SharedPreferences sharedPref;
-    private static final String
-            SHARED_PREF_NAME = "kh.com.ipay88.sdk.demo.sharedPref",
-            SHARED_PREF_KEYS_CURRENCY = "kh.com.ipay88.sdk.demo.sharedPref.currency",
-            SHARED_PREF_BALANCE_USD = "kh.com.ipay88.sdk.demo.sharedPref.balance.usd",
-            SHARED_PREF_BALANCE_KHR = "kh.com.ipay88.sdk.demo.sharedPref.balance.khr";
+
     private String sharedPrefCurrency;
     private double sharedPrefBalanceUSD, sharedPrefBalanceKHR;
     private final DecimalFormat df = new DecimalFormat("0.00");
@@ -63,15 +60,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initData();
+        initView();
+    }
+
     private void initData() {
         // MARK: - Init Db
         demoDatabase = IPay88DemoDatabaseHelper.getInstance(getApplicationContext());
 
-        // MARK: - Get Balance
-        sharedPref = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
-        sharedPrefCurrency = sharedPref.getString(SHARED_PREF_KEYS_CURRENCY, "USD");
-        sharedPrefBalanceUSD = sharedPref.getFloat(SHARED_PREF_BALANCE_USD, 0.00f);
-        sharedPrefBalanceKHR = sharedPref.getFloat(SHARED_PREF_BALANCE_KHR, 0.00f);
+        // MARK: - Get SharedPreference
+        sharedPref = SharedPrefHelper.getInstance(getApplicationContext());
+        sharedPrefCurrency = sharedPref.getString(SharedPrefHelper.SHARED_PREF_KEYS_CURRENCY, "USD");
+        sharedPrefBalanceUSD = sharedPref.getFloat(SharedPrefHelper.SHARED_PREF_BALANCE_USD, 0.00f);
+        sharedPrefBalanceKHR = sharedPref.getFloat(SharedPrefHelper.SHARED_PREF_BALANCE_KHR, 0.00f);
     }
 
     private void initView() {
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.switchCurrency.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             this.sharedPrefCurrency = isChecked ? "KHR" : "USD";
             //this.sharedPrefCurrency = this.selectedCurrency;
-            sharedPref.edit().putString(SHARED_PREF_KEYS_CURRENCY, sharedPrefCurrency).apply();
+            sharedPref.edit().putString(SharedPrefHelper.SHARED_PREF_KEYS_CURRENCY, sharedPrefCurrency).apply();
             this.textViewCurrentAccount.setText(sharedPrefCurrency.equals("USD") ? "Current Balance in USD :" : "Current Balance in KHR :");
             this.textViewBalance.setText(StringUtils.GetCurrencyFormat(sharedPrefCurrency.equals("USD") ? sharedPrefBalanceUSD : sharedPrefBalanceKHR));
             this.selectedAmount(this.textView050);
@@ -111,24 +115,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnCheckout = findViewById(R.id.btnCheckout);
         btnCheckout.setOnClickListener(view -> {
+
+            sharedPref.edit()
+                    .putString(SharedPrefHelper.SHARED_PREF_USER_CONTACT, editTextPhone.getText().toString())
+                    .apply();
+
             long milliseconds = System.currentTimeMillis();
             String refNo = "SDK-" + milliseconds;
 
+            String targetServer = sharedPref.getString(SharedPrefHelper.SHARED_PREF_TARGET_SERVER, "DVL");
+            IPay88PayRequest.Environment server = IPay88PayRequest.Environment.valueOf(targetServer);
+
             // MARK: - IPay88 Checkout
             IPay88PayRequest payRequest = new IPay88PayRequest();
-            payRequest.setEnvironment(IPay88PayRequest.Environment.DVL);
-            payRequest.setMerchantCode("KH00002");
-            payRequest.setMerchantKey("password");
-            payRequest.setPaymentID(0);
+            payRequest.setEnvironment(server);
+            payRequest.setMerchantCode(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_CODE, "KH00002"));
+            payRequest.setMerchantKey(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_KEY, "password"));
+            payRequest.setPaymentID(sharedPref.getInt(SharedPrefHelper.SHARED_PREF_PAYMENT_ID, 0));
             payRequest.setRefNo(refNo);
             payRequest.setAmount(df.format(Double.parseDouble(this.selectedAmount)));
             payRequest.setCurrency(this.sharedPrefCurrency.equals("USD") ? IPay88PayRequest.Currency.USD : IPay88PayRequest.Currency.KHR);
-            payRequest.setProdDesc("Top Up (SDK)");
-            payRequest.setUserName("Tola KUN");
-            payRequest.setUserEmail("tola.kun@ipay88.com.kh");
-            payRequest.setUserContact(this.editTextPhone.getText().toString());
-            payRequest.setRemark("aOS");
-            payRequest.setBackendURL(null);
+            payRequest.setProdDesc(sharedPref.getString(SharedPrefHelper.SHARED_PREF_PRO_DESC, "Top Up (SDK)"));
+            payRequest.setUserName(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_NAME, "Tola KUN"));
+            payRequest.setUserEmail(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_EMAIL, "tola.kun@ipay88.com.kh"));
+            payRequest.setUserContact(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_CONTACT, this.editTextPhone.getText().toString()));
+            payRequest.setRemark(sharedPref.getString(SharedPrefHelper.SHARED_PREF_REMARK, null));
+            payRequest.setBackendURL(sharedPref.getString(SharedPrefHelper.SHARED_PREF_BACKEND_URL, null));
 
             try {
                 // MARK: - Save Log Request
@@ -151,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // MARK: - First call before event invoked
         this.textViewCurrentAccount.setText(sharedPrefCurrency.equals("USD") ? "Current Balance in USD :" : "Current Balance in KHR :");
         this.textViewBalance.setText(StringUtils.GetCurrencyFormat(sharedPrefCurrency.equals("USD") ? sharedPrefBalanceUSD : sharedPrefBalanceKHR));
+        this.editTextPhone.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_CONTACT, "017847800"));
         this.textView050.setText(sharedPrefCurrency.equals("USD") ? "0.50" : "2.00K");
         this.selectedAmount(this.textView050);
     }
@@ -171,11 +184,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // MARK: - Update Balance
                 if (MainActivity.payResponse.getCurrency().equals("USD")) {
                     sharedPrefBalanceUSD += Double.parseDouble(MainActivity.payResponse.getAmount());
-                    sharedPref.edit().putFloat(SHARED_PREF_BALANCE_USD, (float) sharedPrefBalanceUSD).apply();
+                    sharedPref.edit().putFloat(SharedPrefHelper.SHARED_PREF_BALANCE_USD, (float) sharedPrefBalanceUSD).apply();
                     this.textViewBalance.setText(StringUtils.GetCurrencyFormat(sharedPrefBalanceUSD));
                 } else {
                     sharedPrefBalanceKHR += Double.parseDouble(MainActivity.payResponse.getAmount());
-                    sharedPref.edit().putFloat(SHARED_PREF_BALANCE_KHR, (float) sharedPrefBalanceKHR).apply();
+                    sharedPref.edit().putFloat(SharedPrefHelper.SHARED_PREF_BALANCE_KHR, (float) sharedPrefBalanceKHR).apply();
                     this.textViewBalance.setText(StringUtils.GetCurrencyFormat(sharedPrefBalanceKHR));
                 }
             }
@@ -236,11 +249,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .putExtra("CURRENCY", sharedPrefCurrency);
                 startActivity(intent);
                 return true;
-            /*case R.id.menu_activity_main_setting:
-                intent = new Intent(this, SettingActivity.class)
-                        .putExtra("CURRENCY", sharedPrefCurrency);
+            case R.id.menu_activity_main_setting:
+                intent = new Intent(this, SettingActivity.class);
                 startActivity(intent);
-                return true;*/
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

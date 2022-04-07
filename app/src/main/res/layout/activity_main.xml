@@ -24,11 +24,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:checked="false"
                 android:minHeight="48dp"
                 android:showText="true"
                 android:text="Switch Account:"
                 android:textOff="USD"
-                android:textOn="KHR" />
+                android:textOn="KHR"
+                tools:checked="false" />
 
             <TextView
                 android:id="@+id/textViewCurrentAccount"
