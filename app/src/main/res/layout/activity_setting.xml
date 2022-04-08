@@ -65,7 +65,10 @@
                     android:id="@+id/edtMerchantCode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:layout_marginBottom="16dp"
+                    android:background="#00FFFFFF"
                     android:hint="Merchant Code" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -77,7 +80,10 @@
                     android:id="@+id/edtMerchantKey"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:layout_marginBottom="16dp"
+                    android:background="#00FFFFFF"
                     android:hint="Merchant Key" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -89,7 +95,10 @@
                     android:id="@+id/edtPaymentId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:layout_marginBottom="16dp"
+                    android:background="#00FFFFFF"
                     android:hint="Payment Id"
                     android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -102,7 +111,10 @@
                     android:id="@+id/edtProDesc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:layout_marginBottom="16dp"
+                    android:background="#00FFFFFF"
                     android:hint="ProDesc" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -114,7 +126,10 @@
                     android:id="@+id/edtUserName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:layout_marginBottom="16dp"
+                    android:background="#00FFFFFF"
                     android:hint="User Name"
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -127,7 +142,10 @@
                     android:id="@+id/edtUserEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:layout_marginBottom="16dp"
+                    android:background="#00FFFFFF"
                     android:hint="User Email"
                     android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -140,7 +158,10 @@
                     android:id="@+id/edtUserContact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:layout_marginBottom="16dp"
+                    android:background="#00FFFFFF"
                     android:hint="User Contact"
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -153,7 +174,10 @@
                     android:id="@+id/edtRemark"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:layout_marginBottom="16dp"
+                    android:background="#00FFFFFF"
                     android:hint="Remark" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -165,7 +189,10 @@
                     android:id="@+id/edtBackendUrl"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:layout_marginBottom="16dp"
+                    android:background="#00FFFFFF"
                     android:hint="Backend URL"
                     android:inputType="textUri" />
             </com.google.android.material.textfield.TextInputLayout>
