@@ -122,7 +122,7 @@ public class IPay88Activity extends AppCompatActivity {
                         .create()
                         .show();
             } catch (Exception e) {
-                String errMsg = "Payment Cancel at Bank Page! " + e.getMessage();
+                String errMsg = "Payment Cancelled. " + e.getMessage();
                 showErrorMsg(errMsg);
             }
         });
@@ -186,7 +186,7 @@ public class IPay88Activity extends AppCompatActivity {
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 String errMsg = consoleMessage.message();
                 if (errMsg.equals("Uncaught TypeError: Cannot read properties of undefined (reading 'submit')"))
-                    showErrorMsg("Payment Cancel at Bank Page!");
+                    showErrorMsg("Payment Cancelled.");
                 return super.onConsoleMessage(consoleMessage);
             }
         });
