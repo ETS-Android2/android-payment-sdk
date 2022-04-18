@@ -113,7 +113,7 @@ public class IPay88Activity extends AppCompatActivity {
                                     if (countCancelClick <= 1) {
                                         wbvPayment.loadUrl("javascript:window.document.PaymentCancel.submit();");
                                     } else {
-                                        String errMsg = "Payment Cancel (WebView-Error)";
+                                        String errMsg = "Payment Cancelled. (WebView-Error)";
                                         showErrorMsg(errMsg);
                                     }
                                 })

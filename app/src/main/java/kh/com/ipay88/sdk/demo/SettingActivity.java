@@ -57,7 +57,6 @@ public class SettingActivity extends AppCompatActivity {
         edtRemark = findViewById(R.id.edtRemark);
         edtBackendUrl = findViewById(R.id.edtBackendUrl);
 
-
         // MARK: - Fill-in form data
         String server = sharedPref.getString(SharedPrefHelper.SHARED_PREF_TARGET_SERVER, "DVL");
         rdbDvl.setChecked(server.equals(IPay88PayRequest.Environment.DVL.name()));
@@ -104,11 +103,21 @@ public class SettingActivity extends AppCompatActivity {
                     .putString(SharedPrefHelper.SHARED_PREF_BACKEND_URL, edtBackendUrl.getText().toString())
                     .apply();
 
-            InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+            hideKeyboard(this);
 
             Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
         });
 
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
