@@ -58,7 +58,6 @@ public class IPay88Activity extends AppCompatActivity {
     private WebView wbvPayment;
     private ProgressBar progressBar;
     private FloatingActionButton fabCancel;
-    private int countCancelClick;
     private String clientAppId;
     private String clientUserAgent;
     private String clientAppSecret;
@@ -108,14 +107,7 @@ public class IPay88Activity extends AppCompatActivity {
                         .setMessage("Please confirm cancellation of this payment")
                         .setPositiveButton(android.R.string.ok,
                                 (dialog, which) -> {
-                                    // MARK: - Handle in case WebView on error page
-                                    countCancelClick++;
-                                    if (countCancelClick <= 1) {
-                                        wbvPayment.loadUrl("javascript:window.document.PaymentCancel.submit();");
-                                    } else {
-                                        String errMsg = "Payment Cancelled. (WebView-Error)";
-                                        showErrorMsg(errMsg);
-                                    }
+                                    wbvPayment.loadUrl("javascript:window.document.PaymentCancel.submit();");
                                 })
                         .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                         .setCancelable(false)
@@ -186,7 +178,7 @@ public class IPay88Activity extends AppCompatActivity {
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 String errMsg = consoleMessage.message();
                 if (errMsg.equals("Uncaught TypeError: Cannot read properties of undefined (reading 'submit')"))
-                    showErrorMsg("Payment Cancelled.");
+                    showErrorMsg("Payment Cancelled. (WebView-Error)");
                 return super.onConsoleMessage(consoleMessage);
             }
         });

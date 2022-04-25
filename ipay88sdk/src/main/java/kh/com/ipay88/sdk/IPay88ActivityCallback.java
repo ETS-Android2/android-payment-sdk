@@ -30,9 +30,9 @@ public class IPay88ActivityCallback {
      * @param result
      */
     @JavascriptInterface
-    public void onResponse(String result) {
+    public void postMessage(String result) {
         //Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
-        Log.e("onResponse", result);
+        Log.e("postMessage", result);
         IPay88PayResponse payResponse = IPay88PayResponse.GenerateObjectFromJSONData(result);
         this.callback.onResponse(payResponse);
     }
