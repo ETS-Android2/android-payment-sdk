@@ -22,4 +22,6 @@ public interface HistoryItemDao {
     void updateRecord(HistoryItemDto historyItemDto);
     @Delete
     void deleteAll(HistoryItemDto... historyItems);
+    @Query("DELETE FROM HistoryItemDto WHERE Currency LIKE :currency")
+    void deleteAll(String currency);
 }

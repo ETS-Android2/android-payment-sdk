@@ -245,8 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent;
         switch (item.getItemId()) {
             case R.id.menu_activity_main_history:
-                intent = new Intent(this, HistoryActivity.class)
-                        .putExtra("CURRENCY", sharedPrefCurrency);
+                intent = new Intent(this, HistoryActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.menu_activity_main_setting:
