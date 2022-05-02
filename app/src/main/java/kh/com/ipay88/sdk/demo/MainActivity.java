@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         // MARK: - First call before event invoked
-        this.textViewCurrentAccount.setText(sharedPrefCurrency.equals("USD") ? "Current Balance in USD :" : "Current Balance in KHR :");
+        this.textViewCurrentAccount.setText("Current Balance in " + sharedPrefCurrency + " :");
         this.textViewBalance.setText(StringUtils.GetCurrencyFormat(sharedPrefCurrency.equals("USD") ? sharedPrefBalanceUSD : sharedPrefBalanceKHR));
         this.editTextPhone.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_CONTACT, "017847800"));
         this.textView050.setText(sharedPrefCurrency.equals("USD") ? "0.50" : "2.00K");
