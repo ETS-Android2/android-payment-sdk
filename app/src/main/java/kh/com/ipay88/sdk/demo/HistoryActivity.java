@@ -122,7 +122,7 @@ public class HistoryActivity extends AppCompatActivity implements HistoryRecycle
                 new AlertDialog.Builder(HistoryActivity.this)
                         .setTitle("Please confirm")
                         .setMessage("Do you want to delete all records for " + sharedPrefCurrency + " currency?")
-                        .setPositiveButton(android.R.string.ok,
+                        .setPositiveButton("Delete All",
                                 (dialog, which) -> {
                                     this.demoDatabase.historyItemDao().deleteAll(sharedPrefCurrency);
                                     this.historyItemDtoList = demoDatabase.historyItemDao().loadRecords(sharedPrefCurrency);
