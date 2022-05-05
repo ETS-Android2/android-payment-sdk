@@ -143,11 +143,11 @@ public class IPay88Activity extends AppCompatActivity {
             }
 
             // *MARK: - Comment this method when publishing (Prevent Play Store Rejected)
-            @Override
+            /*@Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 //super.onReceivedSslError(view, handler, error);
                 handler.proceed();
-            }
+            }*/
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
