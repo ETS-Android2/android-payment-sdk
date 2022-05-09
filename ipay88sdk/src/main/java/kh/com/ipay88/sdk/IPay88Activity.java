@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -63,7 +64,7 @@ public class IPay88Activity extends AppCompatActivity {
     private String clientUserAgent;
     private String clientAppSecret;
 
-    private List<IPay88Deeplink> IPay88DeeplinkList;
+    private List<IPay88Deeplink> IPay88DeeplinkList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +116,7 @@ public class IPay88Activity extends AppCompatActivity {
                         .create()
                         .show();
             } catch (Exception e) {
-                String errMsg = "Payment Cancelled. " + e.getMessage();
+                String errMsg = "Payment Cancelled.";
                 showErrorMsg(errMsg);
             }
         });
@@ -189,7 +190,7 @@ public class IPay88Activity extends AppCompatActivity {
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 String errMsg = consoleMessage.message();
                 if (errMsg.equals("Uncaught TypeError: Cannot read properties of undefined (reading 'submit')"))
-                    showErrorMsg("Payment Cancelled. (WebView-Error)");
+                    showErrorMsg("Payment Cancelled.");
                 return super.onConsoleMessage(consoleMessage);
             }
         });
