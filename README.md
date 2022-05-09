@@ -18,6 +18,7 @@ We accept online payments from various methods, such as:
 No            |   Date            |    By         |   Version         |   Supports    |   Features
 ------------- | :---------------: | ------------- | :---------------: | ------------- | -------------               
 1             | 2022-Mar-06       | kuntola       |   1.0.0           | minSdk 21 --> targetSdk 31  | - Redirect Payment
+2             | 2022-May-09       | kuntola       |   1.0.1           | minSdk 21 --> targetSdk 31  | - Open PlayStore if App's Deep-link not yet installed
 
 # Table of Contents
 ## 1. Requirements
@@ -85,7 +86,7 @@ dependencyResolutionManagement {
 + Add it in your module build.gradle inside dependencies:
 ```gradle
 dependencies {
-    implementation 'com.github.ipay88-kh:android-payment-sdk:1.0.0'
+    implementation 'com.github.ipay88-kh:android-payment-sdk:1.0.1'
 }
 ```
 
