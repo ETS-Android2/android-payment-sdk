@@ -2,6 +2,7 @@ package kh.com.ipay88.sdk;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -134,8 +135,18 @@ public class IPay88Activity extends AppCompatActivity {
                 }
 
                 if (sdkDeeplink != null) {
-                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(i);
+                    String deeplinkUrl = url;
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deeplinkUrl)));
+                    } catch (ActivityNotFoundException ex01) {
+                        try {
+                            deeplinkUrl = "market://details?id=" + sdkDeeplink.PlayStoreId;
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deeplinkUrl)));
+                        } catch (ActivityNotFoundException ex02) {
+                            deeplinkUrl = "https://play.google.com/store/apps/details?id=" + sdkDeeplink.PlayStoreId;
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deeplinkUrl)));
+                        }
+                    }
                 } else {
                     view.loadUrl(url);
                 }
