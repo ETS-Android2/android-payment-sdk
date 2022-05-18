@@ -1,5 +1,14 @@
 package kh.com.ipay88.sdk.utils;
 
+/*
+ * IPay88Signature
+ * IPay88Sdk
+ *
+ * Created by kunTola on 13/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.UnsupportedEncodingException;

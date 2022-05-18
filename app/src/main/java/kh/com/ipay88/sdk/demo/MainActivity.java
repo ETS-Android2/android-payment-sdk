@@ -1,5 +1,14 @@
 package kh.com.ipay88.sdk.demo;
 
+/*
+ * MainActivity
+ * Demo App
+ *
+ * Created by kunTola on 13/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -129,15 +138,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // MARK: - IPay88 Checkout
             IPay88PayRequest payRequest = new IPay88PayRequest();
             payRequest.setEnvironment(server);
-            payRequest.setMerchantCode(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_CODE, "KH00002"));
-            payRequest.setMerchantKey(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_KEY, "password"));
-            payRequest.setPaymentID(sharedPref.getInt(SharedPrefHelper.SHARED_PREF_PAYMENT_ID, 0));
+            payRequest.setMerchantCode(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_CODE, ""));
+            payRequest.setMerchantKey(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_KEY, ""));
+            payRequest.setPaymentId(sharedPref.getInt(SharedPrefHelper.SHARED_PREF_PAYMENT_ID, 0));
             payRequest.setRefNo(refNo);
-            payRequest.setAmount(df.format(Double.parseDouble(this.selectedAmount)));
+            payRequest.setAmount(Double.parseDouble(this.selectedAmount));
             payRequest.setCurrency(this.sharedPrefCurrency.equals("USD") ? IPay88PayRequest.Currency.USD : IPay88PayRequest.Currency.KHR);
-            payRequest.setProdDesc(sharedPref.getString(SharedPrefHelper.SHARED_PREF_PRO_DESC, "Top Up (SDK)"));
-            payRequest.setUserName(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_NAME, "Tola KUN"));
-            payRequest.setUserEmail(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_EMAIL, "tola.kun@ipay88.com.kh"));
+            payRequest.setProdDesc(sharedPref.getString(SharedPrefHelper.SHARED_PREF_PRO_DESC, ""));
+            payRequest.setUserName(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_NAME, ""));
+            payRequest.setUserEmail(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_EMAIL, ""));
             payRequest.setUserContact(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_CONTACT, this.editTextPhone.getText().toString()));
             payRequest.setRemark(sharedPref.getString(SharedPrefHelper.SHARED_PREF_REMARK, null));
             payRequest.setBackendURL(sharedPref.getString(SharedPrefHelper.SHARED_PREF_BACKEND_URL, null));
@@ -177,17 +186,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 && resultCode == Activity.RESULT_OK
                 && data != null
                 && MainActivity.payResponse != null) {
-            String status = MainActivity.payResponse.getStatus().equals("1") ? "SUCCESS" : "FAILED";
+            String status = MainActivity.payResponse.getStatus() == 1 ? "SUCCESS" : "FAILED";
             String json = IPay88PayResponse.GenerateJSONData(MainActivity.payResponse, false);
 
             if (status.equals("SUCCESS")) {
                 // MARK: - Update Balance
                 if (MainActivity.payResponse.getCurrency().equals("USD")) {
-                    sharedPrefBalanceUSD += Double.parseDouble(MainActivity.payResponse.getAmount());
+                    sharedPrefBalanceUSD += MainActivity.payResponse.getAmount();
                     sharedPref.edit().putFloat(SharedPrefHelper.SHARED_PREF_BALANCE_USD, (float) sharedPrefBalanceUSD).apply();
                     this.textViewBalance.setText(StringUtils.GetCurrencyFormat(sharedPrefBalanceUSD));
                 } else {
-                    sharedPrefBalanceKHR += Double.parseDouble(MainActivity.payResponse.getAmount());
+                    sharedPrefBalanceKHR += MainActivity.payResponse.getAmount();
                     sharedPref.edit().putFloat(SharedPrefHelper.SHARED_PREF_BALANCE_KHR, (float) sharedPrefBalanceKHR).apply();
                     this.textViewBalance.setText(StringUtils.GetCurrencyFormat(sharedPrefBalanceKHR));
                 }

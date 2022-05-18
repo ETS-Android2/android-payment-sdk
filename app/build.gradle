@@ -41,5 +41,5 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:2.4.1"
 
     implementation project(path: ':ipay88sdk')
-    // implementation 'com.github.ipay88-kh:android-payment-sdk:1.0.0'
+    // implementation 'com.github.ipay88-kh:android-payment-sdk:1.0.0-test'
 }

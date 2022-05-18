@@ -1,5 +1,14 @@
 package kh.com.ipay88.sdk.demo;
 
+/*
+ * HistoryActivity
+ * Demo App
+ *
+ * Created by kunTola on 13/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;

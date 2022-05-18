@@ -1,5 +1,14 @@
 package kh.com.ipay88.sdk.demo.utils;
 
+/*
+ * StringUtils
+ * Demo App
+ *
+ * Created by kunTola on 15/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

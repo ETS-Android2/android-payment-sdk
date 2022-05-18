@@ -1,5 +1,14 @@
 package kh.com.ipay88.sdk.demo;
 
+/*
+ * ResultActivity
+ * Demo App
+ *
+ * Created by kunTola on 11/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -43,8 +52,8 @@ public class ResultActivity extends AppCompatActivity {
             IPay88PayResponse payResponse = (IPay88PayResponse) intent.getSerializableExtra(IPay88Constants.PAY_RESPONSE_DATA);
             String jsonOb = IPay88PayResponse.GenerateJSONData(payResponse, true);
 
-            this.imageViewStatus.setImageResource(payResponse.getStatus().equals("1") ? R.drawable.ic_success : R.drawable.ic_failed);
-            this.textViewStatus.setText(payResponse.getStatus().equals("1") ? "SUCCESS" : "FAILED");
+            this.imageViewStatus.setImageResource(payResponse.getStatus() == 1 ? R.drawable.ic_success : R.drawable.ic_failed);
+            this.textViewStatus.setText(payResponse.getStatus() == 1 ? "SUCCESS" : "FAILED");
             this.editTextDetails.setText(jsonOb);
 
         } else {

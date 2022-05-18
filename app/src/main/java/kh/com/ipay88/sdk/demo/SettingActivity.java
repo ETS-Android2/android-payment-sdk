@@ -1,10 +1,18 @@
 package kh.com.ipay88.sdk.demo;
 
+/*
+ * SettingActivity
+ * Demo App
+ *
+ * Created by kunTola on 20/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,13 +40,29 @@ public class SettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting);
         getSupportActionBar().setTitle("Setting");
 
-        initData();
         initView();
+        initData();
     }
 
     private void initData() {
         // MARK: - Get SharedPreference
         sharedPref = SharedPrefHelper.getInstance(getApplicationContext());
+
+        // MARK: - Fill-in form data
+        String server = sharedPref.getString(SharedPrefHelper.SHARED_PREF_TARGET_SERVER, "DVL");
+        rdbDvl.setChecked(server.equals(IPay88PayRequest.Environment.DVL.name()));
+        rdbSandbox.setChecked(server.equals(IPay88PayRequest.Environment.SANDBOX.name()));
+        rdbProd.setChecked(server.equals(IPay88PayRequest.Environment.PRODUCTION.name()));
+
+        edtMerchantCode.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_CODE, ""));
+        edtMerchantKey.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_KEY, ""));
+        edtPaymentId.setText(sharedPref.getInt(SharedPrefHelper.SHARED_PREF_PAYMENT_ID, 0) + "");
+        edtProDesc.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_PRO_DESC, ""));
+        edtUserName.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_NAME, ""));
+        edtUserEmail.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_EMAIL, ""));
+        edtUserContact.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_CONTACT, ""));
+        edtRemark.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_REMARK, null));
+        edtBackendUrl.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_BACKEND_URL, null));
     }
 
     private void initView() {
@@ -57,22 +81,6 @@ public class SettingActivity extends AppCompatActivity {
         edtRemark = findViewById(R.id.edtRemark);
         edtBackendUrl = findViewById(R.id.edtBackendUrl);
 
-        // MARK: - Fill-in form data
-        String server = sharedPref.getString(SharedPrefHelper.SHARED_PREF_TARGET_SERVER, "DVL");
-        rdbDvl.setChecked(server.equals(IPay88PayRequest.Environment.DVL.name()));
-        rdbSandbox.setChecked(server.equals(IPay88PayRequest.Environment.SANDBOX.name()));
-        rdbProd.setChecked(server.equals(IPay88PayRequest.Environment.PRODUCTION.name()));
-
-        edtMerchantCode.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_CODE, "KH00002"));
-        edtMerchantKey.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_MERCHANT_KEY, "password"));
-        edtPaymentId.setText(sharedPref.getInt(SharedPrefHelper.SHARED_PREF_PAYMENT_ID, 0) + "");
-        edtProDesc.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_PRO_DESC, "Top Up (SDK)"));
-        edtUserName.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_NAME, "Tola KUN"));
-        edtUserEmail.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_EMAIL, "tola.kun@ipay88.com.kh"));
-        edtUserContact.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_USER_CONTACT, "017847800"));
-        edtRemark.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_REMARK, null));
-        edtBackendUrl.setText(sharedPref.getString(SharedPrefHelper.SHARED_PREF_BACKEND_URL, null));
-
         btnSave = findViewById(R.id.btnSave);
         btnSave.setOnClickListener(view -> {
 
@@ -90,22 +98,26 @@ public class SettingActivity extends AppCompatActivity {
                     break;
             }
 
+            int paymentId = !edtPaymentId.getText().toString().isEmpty() ? Integer.parseInt(edtPaymentId.getText().toString().trim()) : 0;
             sharedPref.edit()
                     .putString(SharedPrefHelper.SHARED_PREF_TARGET_SERVER, targetServer)
-                    .putString(SharedPrefHelper.SHARED_PREF_MERCHANT_CODE, edtMerchantCode.getText().toString())
-                    .putString(SharedPrefHelper.SHARED_PREF_MERCHANT_KEY, edtMerchantKey.getText().toString())
-                    .putInt(SharedPrefHelper.SHARED_PREF_PAYMENT_ID, Integer.parseInt(edtPaymentId.getText().toString()))
-                    .putString(SharedPrefHelper.SHARED_PREF_PRO_DESC, edtProDesc.getText().toString())
-                    .putString(SharedPrefHelper.SHARED_PREF_USER_NAME, edtUserName.getText().toString())
-                    .putString(SharedPrefHelper.SHARED_PREF_USER_EMAIL, edtUserEmail.getText().toString())
-                    .putString(SharedPrefHelper.SHARED_PREF_USER_CONTACT, edtUserContact.getText().toString())
-                    .putString(SharedPrefHelper.SHARED_PREF_REMARK, edtRemark.getText().toString())
-                    .putString(SharedPrefHelper.SHARED_PREF_BACKEND_URL, edtBackendUrl.getText().toString())
+                    .putString(SharedPrefHelper.SHARED_PREF_MERCHANT_CODE, edtMerchantCode.getText().toString().trim())
+                    .putString(SharedPrefHelper.SHARED_PREF_MERCHANT_KEY, edtMerchantKey.getText().toString().trim())
+                    .putInt(SharedPrefHelper.SHARED_PREF_PAYMENT_ID, paymentId)
+                    .putString(SharedPrefHelper.SHARED_PREF_PRO_DESC, edtProDesc.getText().toString().trim())
+                    .putString(SharedPrefHelper.SHARED_PREF_USER_NAME, edtUserName.getText().toString().trim())
+                    .putString(SharedPrefHelper.SHARED_PREF_USER_EMAIL, edtUserEmail.getText().toString().trim())
+                    .putString(SharedPrefHelper.SHARED_PREF_USER_CONTACT, edtUserContact.getText().toString().trim())
+                    .putString(SharedPrefHelper.SHARED_PREF_REMARK, edtRemark.getText().toString().trim())
+                    .putString(SharedPrefHelper.SHARED_PREF_BACKEND_URL, edtBackendUrl.getText().toString().trim())
                     .apply();
 
             hideKeyboard(this);
 
             Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
+
+            // MARK: - Reset Data
+            initData();
         });
 
     }

@@ -1,7 +1,14 @@
 package kh.com.ipay88.sdk;
 
-import android.content.Context;
-import android.util.Log;
+/*
+ * IPay88ActivityCallback
+ * IPay88Sdk
+ *
+ * Created by kunTola on 13/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
 import android.webkit.JavascriptInterface;
 
 import kh.com.ipay88.sdk.models.IPay88PayResponse;
@@ -12,16 +19,12 @@ import kh.com.ipay88.sdk.utils.IPay88Callback;
  */
 public class IPay88ActivityCallback {
     IPay88Callback callback;
-    Context mContext;
-    private android.widget.Toast Toast;
 
     /**
      * Constructor
-     * @param c
      * @param callback
      */
-    public IPay88ActivityCallback(Context c, IPay88Callback callback) {
-        mContext = c;
+    public IPay88ActivityCallback(IPay88Callback callback) {
         this.callback = callback;
     }
 
@@ -31,9 +34,10 @@ public class IPay88ActivityCallback {
      */
     @JavascriptInterface
     public void postMessage(String result) {
-        //Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
-        Log.e("postMessage", result);
         IPay88PayResponse payResponse = IPay88PayResponse.GenerateObjectFromJSONData(result);
-        this.callback.onResponse(payResponse);
+        if (payResponse != null)
+            this.callback.onResponse(payResponse);
+        else
+            this.callback.onFailure("Error Payment Response.");
     }
 }

@@ -1,15 +1,29 @@
 package kh.com.ipay88.sdk.models;
 
+/*
+ * IPay88PayRequest
+ * IPay88Sdk
+ *
+ * Created by kunTola on 13/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
 import static java.lang.String.valueOf;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import kh.com.ipay88.sdk.utils.IPay88Signature;
 import okhttp3.FormBody;
@@ -21,15 +35,15 @@ import okhttp3.RequestBody;
 public class IPay88PayRequest implements Serializable {
     private String merchantCode;
     @JsonIgnore
-    private String merchantKey;
-    private int paymentID;
-    private String refNo;
-    private String amount;
-    private String currency;
-    private String prodDesc;
-    private String userName;
-    private String userEmail;
-    private String userContact;
+    private String merchantKey = "";
+    private int paymentId = 0;
+    private String refNo = "";
+    private double amount = 0.00;
+    private Currency currency = Currency.USD;
+    private String prodDesc = "";
+    private String userName = "";
+    private String userEmail = "";
+    private String userContact = "";
     private String remark;
     private String signature;
     private String backendURL;
@@ -40,6 +54,10 @@ public class IPay88PayRequest implements Serializable {
     private final String paymentUrl = "/ePayment/entry.asp";
     private final String deeplinkListUrl = "/ePayment/WebService/MobileSDK/api/deeplinkList";
 
+    // MARK: - For Cancel Payment
+    private String eId;
+    private String errDesc;
+
     /**
      * IPay88's Environment Constant
      */
@@ -48,9 +66,9 @@ public class IPay88PayRequest implements Serializable {
         SANDBOX("https://sandbox.ipay88.com.kh"),
         PRODUCTION("https://payment.ipay88.com.kh");
 
-        String baseUrl;
-        Environment(String baseUrl) {
-            this.baseUrl = baseUrl;
+        String rawValue;
+        Environment(String rawValue) {
+            this.rawValue = rawValue;
         }
     }
 
@@ -58,9 +76,9 @@ public class IPay88PayRequest implements Serializable {
         KHR("KHR"),
         USD("USD");
 
-        String label;
-        Currency(String label) {
-            this.label = label;
+        String rawValue;
+        Currency(String rawValue) {
+            this.rawValue = rawValue;
         }
     }
 
@@ -72,10 +90,11 @@ public class IPay88PayRequest implements Serializable {
 
     /**
      * Init payment request object with parameter
+     *
      * @param environment
      * @param merchantCode
      * @param merchantKey
-     * @param paymentID
+     * @param paymentId
      * @param refNo
      * @param amount
      * @param currency
@@ -86,14 +105,14 @@ public class IPay88PayRequest implements Serializable {
      * @param remark
      * @param backendURL
      */
-    public IPay88PayRequest(Environment environment, String merchantCode, String merchantKey, int paymentID, String refNo, String amount, Currency currency, String prodDesc, String userName, String userEmail, String userContact, String remark, String backendURL) {
+    public IPay88PayRequest(Environment environment, String merchantCode, String merchantKey, int paymentId, String refNo, double amount, Currency currency, String prodDesc, String userName, String userEmail, String userContact, String remark, String backendURL) {
         this.environment = environment;
         this.merchantCode = merchantCode;
         this.merchantKey = merchantKey;
-        this.paymentID = paymentID;
+        this.paymentId = paymentId;
         this.refNo = refNo;
         this.amount = amount;
-        this.currency = currency.label;
+        this.currency = currency;
         this.prodDesc = prodDesc;
         this.userName = userName;
         this.userEmail = userEmail;
@@ -104,8 +123,10 @@ public class IPay88PayRequest implements Serializable {
 
     /**
      * Adjust Data Request Fields
+     *
      * @return
      */
+    @JsonIgnore
     public IPay88PayRequest adjust() {
         this.backendURL = this.getBackendURL();
         this.generateSignature();
@@ -114,28 +135,32 @@ public class IPay88PayRequest implements Serializable {
 
     /**
      * Get Payment Environment URL
+     *
      * @return
      */
     @JsonIgnore
     public String getPaymentUrl() {
-        String baseUrl = null;
-        if (this.environment != null) {
-            baseUrl = this.environment.baseUrl + this.paymentUrl;
-        }
-        return baseUrl;
+        return this.environment.rawValue + this.paymentUrl;
     }
 
     /**
      * Get Deeplink WebService Environment URL
+     *
      * @return
      */
     @JsonIgnore
     public String getDeeplinkListUrl() {
-        String baseUrl = null;
-        if (this.environment != null) {
-            baseUrl = this.environment.baseUrl + this.deeplinkListUrl;
-        }
-        return baseUrl;
+        return this.environment.rawValue + this.deeplinkListUrl;
+    }
+
+    @JsonIgnore
+    public String getQueryUrl() {
+        return this.environment.rawValue + "/ePayment/WebService/MobileSDK/api/query";
+    }
+
+    @JsonIgnore
+    public String getCancelUrl() {
+        return this.environment.rawValue + "/PG/PaymentResponse/PaymentCancel?" + this.getFormBodyCancel();
     }
 
     @JsonIgnore
@@ -169,13 +194,13 @@ public class IPay88PayRequest implements Serializable {
     }
 
     @JsonProperty("PaymentId")
-    public int getPaymentID() {
-        return paymentID;
+    public int getPaymentId() {
+        return paymentId;
     }
 
     @JsonProperty("PaymentId")
-    public void setPaymentID(int value) {
-        this.paymentID = value;
+    public void setPaymentId(int value) {
+        this.paymentId = value;
     }
 
     @JsonProperty("RefNo")
@@ -189,33 +214,33 @@ public class IPay88PayRequest implements Serializable {
     }
 
     @JsonProperty("Amount")
-    public String getAmount() {
-        return amount.replace(",", "");
+    public double getAmount() {
+        return amount;
     }
 
     @JsonProperty("Amount")
-    public void setAmount(String value) {
+    public void setAmount(double value) {
         this.amount = value;
     }
 
     @JsonIgnore
     public String getAmountFormat() {
-        return df.format(Double.parseDouble(this.getAmount()));
+        return df.format(this.amount);
     }
 
     @JsonIgnore
     public String getAmountHash() {
-        return df.format(Double.parseDouble(this.getAmount())).replace(".", "");
+        return df.format(this.amount).replace(".", "");
     }
 
     @JsonProperty("Currency")
-    public String getCurrency() {
+    public Currency getCurrency() {
         return currency;
     }
 
     @JsonProperty("Currency")
     public void setCurrency(Currency currency) {
-        this.currency = currency.label;
+        this.currency = currency;
     }
 
     @JsonProperty("ProdDesc")
@@ -274,7 +299,7 @@ public class IPay88PayRequest implements Serializable {
     }
 
     @JsonProperty("Signature")
-    public void setSignature(String value) {
+    private void setSignature(String value) {
         this.signature = value;
     }
 
@@ -288,16 +313,28 @@ public class IPay88PayRequest implements Serializable {
         return validateBackendURL(this.backendURL);
     }
 
+    @JsonIgnore
+    public void setEId(String eId) {
+        this.eId = eId;
+    }
+
+    @JsonIgnore
+    public void setErrDesc(String errDesc) {
+        this.errDesc = errDesc;
+    }
+
     /**
      * Get Default Backend URL in case Merchant doesn't set its value
+     *
      * @param value
      * @return
      */
+    @JsonIgnore
     private String validateBackendURL(String value) {
         if (value == null || value.equals("")) {
             String defaultUrl = "/ePayment/Mobile/SDKResponsePostback.asp";
             if (this.environment != null) {
-                value = this.environment.baseUrl + defaultUrl;
+                value = this.environment.rawValue + defaultUrl;
             }
         }
         return value;
@@ -306,24 +343,27 @@ public class IPay88PayRequest implements Serializable {
     /**
      * Generate Payment Request Signature
      */
+    @JsonIgnore
     private void generateSignature() {
         String amountHash = this.getAmountHash();
-        String key = this.merchantKey + this.merchantCode + this.refNo + amountHash + this.currency;
-        String hash = IPay88Signature.SHA1((key));
+        String key = this.merchantKey + this.merchantCode + this.refNo + amountHash + this.currency.rawValue;
+        String hash = IPay88Signature.SHA1(key);
         this.signature = hash;
     }
 
     /**
      * Generate okhttp3's RequestBody
+     *
      * @return
      */
-    public RequestBody generateFormBody() {
+    @JsonIgnore
+    public RequestBody getFormBody() {
         RequestBody formBody = new FormBody.Builder()
                 .add("MerchantCode", this.merchantCode)
-                .add("PaymentId", this.paymentID == 0 ? "" : valueOf(this.paymentID))
+                .add("PaymentId", this.paymentId == 0 ? "" : valueOf(this.paymentId))
                 .add("RefNo", this.refNo)
                 .add("Amount", this.getAmountFormat())
-                .add("Currency", this.currency)
+                .add("Currency", this.currency.rawValue)
                 .add("ProdDesc", this.prodDesc)
                 .add("UserName", this.userName)
                 .add("UserEmail", this.userEmail)
@@ -335,11 +375,28 @@ public class IPay88PayRequest implements Serializable {
         return formBody;
     }
 
+    @JsonIgnore
+    public RequestBody getFormBodyQuery() {
+        RequestBody formBody = new FormBody.Builder()
+                .add("RefNo", this.refNo)
+                .add("Amount", this.getAmountFormat())
+                .add("Signature", this.signature)
+                .build();
+        return formBody;
+    }
+
+    @JsonIgnore
+    private String getFormBodyCancel() {
+        return "EID=" + this.eId + "&ErrDesc=" + this.errDesc;
+    }
+
     /**
      * Safe URL Encode
+     *
      * @param value
      * @return
      */
+    @JsonIgnore
     private String urlEncode(String value) {
         String result = "";
         try {
@@ -352,14 +409,16 @@ public class IPay88PayRequest implements Serializable {
 
     /**
      * Generate JSON String from Payment Request Object
+     *
      * @param data
      * @return
      */
-    public static String GenerateJSONData(IPay88PayRequest data) {
+    @JsonIgnore
+    public static String GenerateJSONData(IPay88PayRequest data, boolean isPretty) {
         String json = null;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            json = objectMapper.writeValueAsString(data);
+            json = isPretty ? objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data) : objectMapper.writeValueAsString(data);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -368,9 +427,11 @@ public class IPay88PayRequest implements Serializable {
 
     /**
      * Generate Payment Request Object from JSON
+     *
      * @param json
      * @return
      */
+    @JsonIgnore
     public static IPay88PayRequest GenerateObjectFromJSONData(String json) {
         IPay88PayRequest data = null;
         try {
@@ -380,5 +441,51 @@ public class IPay88PayRequest implements Serializable {
             e.printStackTrace();
         }
         return data;
+    }
+
+    /**
+     * Validate Payment Request
+     *
+     * @return errorMessage else null
+     */
+    @JsonIgnore
+    public String validate() {
+        if (this.merchantCode == null || this.merchantCode.isEmpty())
+            return "Invalid field named [MerchantCode].";
+
+        if (this.merchantKey == null || this.merchantKey.isEmpty())
+            return "Invalid field named [MerchantKey].";
+
+        if (this.refNo == null || this.refNo.isEmpty())
+            return "Invalid field named [RefNo].";
+
+        if (this.currency == null)
+            return "Invalid field named [Currency].";
+
+        if (this.prodDesc == null || this.prodDesc.isEmpty())
+            return "Invalid field named [ProdDesc].";
+
+        if (this.userName == null || this.userName.isEmpty())
+            return "Invalid field named [UserName].";
+
+        if (this.userEmail == null || this.userEmail.isEmpty() || !this.isValidEmail(this.userEmail))
+            return "Invalid field named [UserEmail].";
+
+        if (this.userContact == null || this.userContact.isEmpty())
+            return "Invalid field named [UserContact].";
+
+        return null;
+    }
+
+    @JsonIgnore
+    private boolean isValidEmail(String email) {
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+
+        boolean isValid = matcher.matches();
+        return isValid;
     }
 }

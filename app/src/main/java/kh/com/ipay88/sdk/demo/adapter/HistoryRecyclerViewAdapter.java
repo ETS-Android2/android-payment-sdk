@@ -1,5 +1,14 @@
 package kh.com.ipay88.sdk.demo.adapter;
 
+/*
+ * HistoryRecyclerViewAdapter
+ * Demo App
+ *
+ * Created by kunTola on 13/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,8 +76,8 @@ public class HistoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
             IPay88PayResponse data = objectMapper.readValue(json, IPay88PayResponse.class);
 
             if (data != null) {
-                boolean status = data.getStatus().equals("1");
-                sumAmountStr = status ? df.format(historyItemDTO.AmountSharedRef + Double.parseDouble(data.getAmount())) : df.format(historyItemDTO.AmountSharedRef);
+                boolean status = data.getStatus() == 1;
+                sumAmountStr = status ? df.format(historyItemDTO.AmountSharedRef + data.getAmount()) : df.format(historyItemDTO.AmountSharedRef);
                 sumAmountStr = StringUtils.GetAmountFormat(sumAmountStr);
                 sumAmountStr = " -> " + sumAmountStr + (data.getCurrency().equals("USD") ? " $" : " ៛");
 

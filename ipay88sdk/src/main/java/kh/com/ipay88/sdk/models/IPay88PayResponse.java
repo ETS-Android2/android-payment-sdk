@@ -1,25 +1,40 @@
 package kh.com.ipay88.sdk.models;
 
-import com.fasterxml.jackson.annotation.*;
+/*
+ * IPay88PayResponse
+ * IPay88Sdk
+ *
+ * Created by kunTola on 13/2/2022.
+ * Tel.017847800
+ * Email.kuntola883@gmail.com
+ */
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
+
+import kh.com.ipay88.sdk.utils.IPay88Signature;
 
 /**
  * IPay88's Payment Response Parameter
  */
 public class IPay88PayResponse implements Serializable {
 	private String merchantCode;
-	private int paymentID;
+	private int paymentId;
 	private String refNo;
-	private String amount;
+	private double amount;
 	private String currency;
 	private String remark;
 	private String transID;
 	private String authCode;
-	private String status;
+	private int status;
 	private String errDesc;
 	private String signature;
+
+	private static final DecimalFormat df = new DecimalFormat("0.00");
 
 	@JsonProperty("MerchantCode")
 	public String getMerchantCode() { return merchantCode; }
@@ -27,9 +42,9 @@ public class IPay88PayResponse implements Serializable {
 	public void setMerchantCode(String value) { this.merchantCode = value; }
 
 	@JsonProperty("PaymentId")
-	public int getPaymentID() { return paymentID; }
+	public int getPaymentId() { return paymentId; }
 	@JsonProperty("PaymentId")
-	public void setPaymentID(int value) { this.paymentID = value; }
+	public void setPaymentId(int value) { this.paymentId = value; }
 
 	@JsonProperty("RefNo")
 	public String getRefNo() { return refNo; }
@@ -37,9 +52,13 @@ public class IPay88PayResponse implements Serializable {
 	public void setRefNo(String value) { this.refNo = value; }
 
 	@JsonProperty("Amount")
-	public String getAmount() { return amount.replace(",", ""); }
+	public double getAmount() { return amount; }
 	@JsonProperty("Amount")
-	public void setAmount(String value) { this.amount = value; }
+	public void setAmount(double value) { this.amount = value; }
+	@JsonIgnore
+	public String getAmountHash() {
+		return df.format(this.amount).replace(".", "");
+	}
 
 	@JsonProperty("Currency")
 	public String getCurrency() { return currency; }
@@ -62,9 +81,9 @@ public class IPay88PayResponse implements Serializable {
 	public void setAuthCode(String value) { this.authCode = value; }
 
 	@JsonProperty("Status")
-	public String getStatus() { return status; }
+	public int getStatus() { return status; }
 	@JsonProperty("Status")
-	public void setStatus(String value) { this.status = value; }
+	public void setStatus(int value) { this.status = value; }
 
 	@JsonProperty("ErrDesc")
 	public String getErrDesc() { return errDesc; }
@@ -107,5 +126,13 @@ public class IPay88PayResponse implements Serializable {
 			e.printStackTrace();
 		}
 		return data;
+	}
+
+	@JsonIgnore
+	public String getSignature(String merchantKey) {
+		String amountHash = this.getAmountHash();
+		String key = merchantKey + this.merchantCode + this.paymentId + this.refNo + amountHash + this.currency + this.status;
+		String hash = IPay88Signature.SHA1(key);
+		return hash;
 	}
 }
