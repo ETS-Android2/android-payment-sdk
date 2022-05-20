@@ -347,8 +347,13 @@ public class IPay88PayRequest implements Serializable {
     private void generateSignature() {
         String amountHash = this.getAmountHash();
         String key = this.merchantKey + this.merchantCode + this.refNo + amountHash + this.currency.rawValue;
-        String hash = IPay88Signature.SHA1(key);
-        this.signature = hash;
+        this.signature = IPay88Signature.SHA1(key);
+    }
+
+    public String getSignature(int paymentId, int status)  {
+        String amountHash = this.getAmountHash();
+        String key = merchantKey + this.merchantCode + paymentId + this.refNo + amountHash + this.currency.rawValue + status;
+        return IPay88Signature.SHA1(key);
     }
 
     /**

@@ -240,7 +240,7 @@ public class IPay88Activity extends AppCompatActivity {
         wbvPayment.addJavascriptInterface(new IPay88ActivityCallback(new IPay88Callback() {
             @Override
             public void onResponse(IPay88PayResponse payResponse) {
-                String merchantSignature = payResponse.getSignature(payRequest.getMerchantKey());
+                String merchantSignature = payRequest.getSignature(payResponse.getPaymentId(), payResponse.getStatus());
                 String merchantAmountReq = payRequest.getAmountHash();
 
                 // MARK: - Validate Signature + Amount

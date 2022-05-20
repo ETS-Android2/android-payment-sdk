@@ -127,12 +127,4 @@ public class IPay88PayResponse implements Serializable {
 		}
 		return data;
 	}
-
-	@JsonIgnore
-	public String getSignature(String merchantKey) {
-		String amountHash = this.getAmountHash();
-		String key = merchantKey + this.merchantCode + this.paymentId + this.refNo + amountHash + this.currency + this.status;
-		String hash = IPay88Signature.SHA1(key);
-		return hash;
-	}
 }
